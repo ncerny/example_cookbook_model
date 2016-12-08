@@ -1,0 +1,162 @@
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: centos-5.11
+  - name: centos-6.8
+  - name: centos-7.2
+  - name: debian-7.11
+  - name: debian-8.5
+  - name: fedora-24
+    run_list: yum::dnf_yum_compat
+  - name: opensuse-13.2
+  - name: opensuse-leap-42.1
+  - name: ubuntu-12.04
+  - name: ubuntu-14.04
+  - name: ubuntu-16.04
+
+suites:
+  #
+  # config
+  #
+  - name: config
+    run_list:
+    - recipe[httpd_config_test]
+
+  #
+  # modules
+  #
+  - name: module22
+    run_list:
+    - recipe[httpd_module_test]
+    includes: [
+      'centos-5.11',
+      'centos-6.8',
+      'debian-7.11',
+      'ubuntu-12.04'
+      ]
+    attributes:
+      httpd:
+        version: '2.2'
+
+  - name: module24
+    run_list:
+    - recipe[httpd_module_test]
+    includes: [
+      'centos-7.2',
+      'debian-8.4',
+      'fedora-24',
+      'ubuntu-14.04',
+      'ubuntu-16.04',
+      'freebsd-9.3',
+      'freebsd-10.3',
+      'opensuse-13.2'
+      ]
+    attributes:
+      httpd:
+        version: '2.4'
+
+  #
+  # service22-single
+  #
+  - name: service22-single
+    run_list:
+    - recipe[httpd_service_test::single]
+    includes: [
+      'centos-5.11',
+      'centos-6.8',
+      'debian-7.11',
+      'ubuntu-12.04'
+      ]
+    attributes:
+      httpd:
+        version: '2.2'
+
+  #
+  # service22-multi
+  #
+  - name: service22-multi
+    run_list:
+    - recipe[httpd_service_test::multi]
+    includes: [
+      'centos-5.11',
+      'centos-6.8',
+      'debian-7.11',
+      'ubuntu-12.04'
+      ]
+    attributes:
+      httpd:
+        contact: 'bob@computers.biz'
+        version: '2.2'
+        service_name: 'multi'
+        listen_ports: [ '81', '444' ]
+        run_user: 'bob'
+        run_group: 'bob'
+        timeout: '1234'
+        keepalive: false
+        keepaliverequests: '5678'
+        keepalivetimeout: '8765'
+        mpm: 'prefork'
+        startservers: '20'
+        minspareservers: '20'
+        minspareservers: '40'
+
+  #
+  # service24-single
+  #
+  - name: service24-single
+    driver:
+    run_list:
+    - recipe[httpd_service_test::single]
+    includes: [
+      'centos-7.2',
+      'fedora-24',
+      'debian-8.4',
+      'ubuntu-14.04',
+      'ubuntu-16.04',
+      'freebsd-9.3',
+      'freebsd-10.3',
+      'opensuse-13.2'
+      ]
+    attributes:
+      httpd:
+        version: '2.4'
+
+  #
+  # service24-multi-docker
+  #
+  - name: service24-multi
+    run_list:
+    - recipe[httpd_service_test::multi]
+    includes: [
+      'centos-7.2',
+      'centos-8.4',
+      'fedora-24',
+      'ubuntu-14.04',
+      'ubuntu-16.04',
+      'freebsd-9.3',
+      'freebsd-10.3',
+      'opensuse-13.2'
+      ]
+    attributes:
+      httpd:
+        version: '2.4'
+        service_name: 'multi'
+        listen_ports: [ '81', '444' ]
+        run_user: 'bob'
+        run_group: 'bob'
+        contact: 'alice@computers.biz'
+        timeout: '1234'
+        keepalive: false
+        keepaliverequests: '5678'
+        keepalivetimeout: '8765'
+        mpm: 'worker'
+        startservers: '20'
+        minspareservers: '20'
+        minspareservers: '40'
